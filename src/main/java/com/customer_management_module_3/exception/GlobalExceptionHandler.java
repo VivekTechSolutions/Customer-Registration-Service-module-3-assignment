@@ -23,3 +23,7 @@ public class GlobalExceptionHandler {
         return Map.of("error", ex.getMessage());
     }
 }
+
+
+   
+

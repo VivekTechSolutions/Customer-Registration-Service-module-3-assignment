@@ -11,4 +11,6 @@ import com.customer_management_module_3.entity.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

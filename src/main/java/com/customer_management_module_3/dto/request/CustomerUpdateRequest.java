@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Size;
 
 public class CustomerUpdateRequest {
 
-    @Size(min = 3, message = "Name must be at least 3 characters long")
+    @Size@Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
     private String name;
 
     // phone is optional

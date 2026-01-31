@@ -1,7 +1,5 @@
 package com.customer_management_module_3.service.implementation;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Service;
 
 import com.customer_management_module_3.dto.request.CustomerCreateRequest;
@@ -24,11 +22,19 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse registerCustomer(CustomerCreateRequest request) {
 
+        // Check if email already exists
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException(
+                "Customer with email " + request.getEmail() + " already exists"
+            );
+        }
+
         Customer customer = new Customer();
         customer.setName(request.getName());
         customer.setEmail(request.getEmail());
         customer.setPhone(request.getPhone());
-        customer.setRegisteredDate(LocalDateTime.now());
+
+        // registeredDate will be automatically set via @PrePersist in entity
 
         Customer saved = repository.save(customer);
         return mapToResponse(saved);
@@ -37,7 +43,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse getCustomerByEmail(String email) {
         Customer customer = repository.findByEmail(email)
-            .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+            .orElseThrow(() -> new CustomerNotFoundException(
+                "Customer with email " + email + " not found"
+            ));
 
         return mapToResponse(customer);
     }
@@ -46,12 +54,20 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse updateCustomer(String email, CustomerUpdateRequest request) {
 
         Customer customer = repository.findByEmail(email)
-            .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+            .orElseThrow(() -> new CustomerNotFoundException(
+                "Customer with email " + email + " not found"
+            ));
 
-        customer.setName(request.getName());
-        customer.setPhone(request.getPhone());
+        // Update fields only if provided
+        if (request.getName() != null && !request.getName().isBlank()) {
+            customer.setName(request.getName());
+        }
+        if (request.getPhone() != null) {
+            customer.setPhone(request.getPhone());
+        }
 
-        return mapToResponse(repository.save(customer));
+        Customer updated = repository.save(customer);
+        return mapToResponse(updated);
     }
 
     private CustomerResponse mapToResponse(Customer customer) {
@@ -63,5 +79,4 @@ public class CustomerServiceImpl implements CustomerService {
         response.setRegisteredDate(customer.getRegisteredDate());
         return response;
     }
-}
-
+} 

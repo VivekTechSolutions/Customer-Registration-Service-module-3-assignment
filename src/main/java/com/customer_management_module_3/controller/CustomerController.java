@@ -1,12 +1,8 @@
 package com.customer_management_module_3.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.customer_management_module_3.dto.request.CustomerCreateRequest;
 import com.customer_management_module_3.dto.request.CustomerUpdateRequest;
@@ -16,7 +12,7 @@ import com.customer_management_module_3.service.CustomerService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/api/v1/customers") 
 public class CustomerController {
 
     private final CustomerService service;
@@ -26,20 +22,29 @@ public class CustomerController {
     }
 
     @PostMapping
-    public CustomerResponse register(@Valid @RequestBody CustomerCreateRequest request) {
-        return service.registerCustomer(request);
+    // Register a new customer
+    public ResponseEntity<CustomerResponse> register(
+            @Valid @RequestBody CustomerCreateRequest request) {
+
+        CustomerResponse response = service.registerCustomer(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{email}")
-    public CustomerResponse getByEmail(@PathVariable String email) {
-        return service.getCustomerByEmail(email);
+    // Get customer details by email
+    public ResponseEntity<CustomerResponse> getByEmail(@PathVariable String email) {
+
+        CustomerResponse response = service.getCustomerByEmail(email);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{email}")
-    public CustomerResponse update(
-        @PathVariable String email,
-        @Valid @RequestBody CustomerUpdateRequest request) {
+    // Update customer details by email
+    public ResponseEntity<CustomerResponse> update(
+            @PathVariable String email,
+            @Valid @RequestBody CustomerUpdateRequest request) {
 
-        return service.updateCustomer(email, request);
+        CustomerResponse response = service.updateCustomer(email, request);
+        return ResponseEntity.ok(response);
     }
 }

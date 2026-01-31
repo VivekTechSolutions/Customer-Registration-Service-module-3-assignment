@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public class CustomerCreateRequest {
 
     @NotBlank(message = "Name is required")
-    @Size(min = 3, message = "Name must be at least 3 characters long")
+    @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
     private String name;
 
     @NotBlank(message = "Email is required")
